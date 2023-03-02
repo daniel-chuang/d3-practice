@@ -1,0 +1,25 @@
+<style>
+  .bar:hover {
+    fill: brown;
+  }
+  .tooltip {
+    // width: 250px;
+    padding: 10px;
+    background-color: white;
+    opacity: 0.85;
+    border: 1px solid black;
+    border-radius: 5px;
+    position: absolute; // position it with top and left
+    display: none; // hide it until revealed
+  
+    pointer-events: none;
+    
+    font-size: 12px;
+    z-index: 2;
+  }
+</style>
+<body>
+  <h1>United States GDP</h1>
+  <script src="https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js"></script>
+  <script type="module" src="./graphic.js"></script>
+</body>
