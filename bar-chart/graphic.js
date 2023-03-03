@@ -33,7 +33,7 @@ fetch("./data.json")
     // Making tooltip
     let tooltip = d3.select("div")
       .append("span")
-      .attr("class", "tooltip");
+      .attr("id", "tooltip");
 
     function moveTooltip(event) {
       const [x, y] = d3.pointer(event);
@@ -56,6 +56,7 @@ fetch("./data.json")
       .on("mouseover", (event, d) => {
         moveTooltip(event);
         tooltip.html("<p>" + d[1] + " Billion</p>");
+        tooltip.attr("data-date", d[0])
       })
       ;
 
@@ -67,12 +68,14 @@ fetch("./data.json")
       // For y axis
       svg.append("g")
         .attr("transform", "translate(" + 50 + "," + 20 + ")")
-        .call(yAxis);
+        .call(yAxis)
+        .attr("id", "y-axis");
 
       // For x axis
       svg.append("g")
         .attr("transform", "translate(" + 50 + "," + h + ")")
-        .call(xAxis);
+        .call(xAxis)
+        .attr("id", "x-axis");
 
       // Adding axis label
       svg.append("text")
