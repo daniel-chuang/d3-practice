@@ -159,17 +159,24 @@ fetch("./data.json")
             `<h3>${d.Name}, ${d.Nationality}</h3>
             <p>Year: ${d.Year}, Time: ${d.Time}</p>
             <p>${d.Doping}</p>
-            `);
-        tooltip.transition()
+            `)
           .style("left", xScale(d.Year) + w_buff + ((window.innerWidth - (w + 2 * w_buff)) / 2) + "px")
           .style("top", yScale(d.Seconds) + document.getElementById("tooltip").offsetHeight + "px");
+        
+        tooltip
+          .transition()
+          .style("opacity", 0.9)
       })
       .on("mouseout", function() { 
         d3.select(this).transition()
           .duration('30')
           .attr("r", 7.5)
           .attr("opacity", 0.7);
-        tooltip.style("display", "none");
+        
+        tooltip
+          .transition()
+          .style("opacity", 0)
+
       });
 
       // Append axis labels
