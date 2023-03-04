@@ -9,3 +9,7 @@ Charts based off the freecodecamp challenges, but coded from scratch and 100% by
 ## [Scatterplot](https://daniel-chuang.github.io/d3-practice/scatter-plot/index.html)
 
 ![Scatterplot Image](https://daniel-chuang.github.io/d3-practice/images/scatter-plot.png)
+
+## [Heatmap](https://daniel-chuang.github.io/d3-practice/heat-map/index.html)
+
+![Heatmap Image](https://daniel-chuang.github.io/d3-practice/images/heat-map.png)
