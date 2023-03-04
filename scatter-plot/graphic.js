@@ -5,6 +5,8 @@ fetch("./data.json")
   .then((response) => response.json())
   .then((data) => {
 
+    var timeFormat = d3.timeFormat('%M:%S');
+
     // Setting up the SVG
     const w = 896;
     const h = 600;
@@ -37,7 +39,14 @@ fetch("./data.json")
       }))
       .range([0, h]);
     
-    const yAxis = d3.axisLeft(yScale);
+    const yAxis = d3.axisLeft(yScale)
+      .tickFormat((d) => {
+        var str = String(Math.floor(d / 60));
+        str += ":";
+        str += String(d % 60) == 0 ? "00" : String(d % 60);
+        console.log(str)
+        return str;
+      });
 
     svg.append("g")
       .attr("transform", "translate(" + w_buff + "," + h_buff + ")")
@@ -54,13 +63,21 @@ fetch("./data.json")
       .attr("cy", (d) => yScale(d.Seconds) + h_buff)
       .attr("r", (d) => 7.5)
       .attr("fill", (d) => d.Doping.length == 0 ? "green" : "red")
+      .attr("class", "dot")
+      .attr("data-xvalue", (d) => d.Year)
+      .attr("data-yvalue", (d) => {
+        var parsedTime = d.Time.split(":");
+        var return_val = new Date(1970, 0, 1, 0, parsedTime[0], parsedTime[1]);
+        return return_val;
+      })
       .attr("opacity", "0.7")
       .attr("stroke", "black")
       .attr("stroke-width", `2px`)
       ;
 
     // Creating a legend
-    svg.append("rect")
+    var legend = svg.append("rect")
+    .attr("id", "legend")
     .attr("x", w - 2 * w_buff - 50)
     .attr("y", 5 * h_buff)
     .attr("width", 195)
@@ -107,11 +124,10 @@ fetch("./data.json")
       .style("width", "fit-content")
       .style("height", "fit-content")
       .style("padding", "12px")
-      .style("background-color", "LightGray")
+      .style("background", "rgba(200, 200, 200, 0.8)")
       .style("pointer-events", "none")
       .attr("class", "tooltip")
       .attr("id", "tooltip")
-      .style("opacity", 0)
       .style("border", "solid")
       .style("border-radius", "8px")
       .style("position", "absolute");
@@ -121,24 +137,45 @@ fetch("./data.json")
       const [x, y] = d3.pointer(event);
       console.log("showing tooltip");
       console.log(window.innerWidth);
-      tooltip.style("opacity", 100);
       tooltip.text("testing");
     }
 
     // Making the function trigger when a dot is hovered
     circles
-      .on("mouseover", (event, d) => {
+      .on("mouseover", function(event, d) {
+        console.log(d3.select(this));
+        console.log(event.toElement);
+
+        d3.select(this).transition()
+          .duration('30')
+          .attr("r", 13)
+          .attr("opacity", 1);
+
         showTooltip(event);
-        tooltip.style("display", "")
-        tooltip.attr('data-year', d.Year);
-        tooltip.style("left", xScale(d.Year) + w_buff + ((window.innerWidth - (w + 2 * w_buff)) / 2) + "px");
-        console.log(document.getElementById("tooltip").offsetHeight);
-        tooltip.style("top", yScale(d.Seconds) + h_buff + document.getElementById("tooltip").offsetHeight + "px");
-        tooltip.html(
-          `<h3>${d.Name}, ${d.Nationality}</h3>
-          <p>Year: ${d.Year}, Time: ${d.Time}</p>
-          <p>${d.Doping}</p>
-          `);
+        tooltip
+          .style("display", "")
+          .attr('data-year', d.Year)
+          .html(
+            `<h3>${d.Name}, ${d.Nationality}</h3>
+            <p>Year: ${d.Year}, Time: ${d.Time}</p>
+            <p>${d.Doping}</p>
+            `);
+        tooltip.transition()
+          .style("left", xScale(d.Year) + w_buff + ((window.innerWidth - (w + 2 * w_buff)) / 2) + "px")
+          .style("top", yScale(d.Seconds) + document.getElementById("tooltip").offsetHeight + "px");
       })
-      .on("mouseout", () => tooltip.style("display", "none"));
+      .on("mouseout", function() { 
+        d3.select(this).transition()
+          .duration('30')
+          .attr("r", 7.5)
+          .attr("opacity", 0.7);
+        tooltip.style("display", "none");
+      });
+
+      // Append axis labels
+      // Y Axis label
+      svg.append("text")
+        .text("Race time in minutes and seconds")
+        .attr("x", w_buff)
+        .attr("transform", `translate(${w_buff + 15}, ${h_buff - 50}) rotate(90)`);
   })
